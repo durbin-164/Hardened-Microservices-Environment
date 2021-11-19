@@ -1,0 +1,14 @@
+How will you test the changes?
+- We use different environments to develop a application such as development, staging and production
+environment. So We know first we need to apply changes in development environment and test all
+the functionality working perfectly. Then we need to deploy in staging stage and simulate the actual 
+user behavour and trafice. If this stage is also passed, then we will deplopy this in production
+environment. If our monitor system shows any unusal activity then we will rollback our privious
+version.
+
+How will you ensure the changes don't negatively affect your cluster?
+- Before we deploy our application we need to monitor our staging environment through
+Prometheus and Grafana. If everything working fine we will apply a deplopyment stratgy
+like blue-green and transfer some traffice in our new production environment and alwasy 
+monitor our application. If monitor system shows any unsual activities, we will rollback or
+if all working fine we will increase more traffic in our new production environment. 

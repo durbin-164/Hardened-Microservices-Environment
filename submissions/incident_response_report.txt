@@ -1,0 +1,23 @@
+1. Incident commander name:
+- Detect crypto miners using the Stratum protocol (falco-4sfth)
+
+2. Executive Summary of what happened:
+- Crypto miners needs havey cpu and gpu. In our cluster three crypto miners pod running and useing
+most of our CPU.
+
+3. Summary of what was affected:
+- Our kubernetes cluster affected by three crypto miners pods that using our most of the cpu.
+so if our cluster is hosted on cloud, it will generate high cost.
+
+4. Summmry of the impact:
+- Crypto miners need havey CPU. so if this pods runs long time, it will hampered our 
+regular service and generate huge cost. 
+
+5. Summary of the remediation steps:
+- Our grafana shows havey use of cpu. and falco detected which pods took most of the cpu.
+So administrator easily deleted this unauthorized pods and deleted it.
+
+6. Summary of lessons learned:
+- We need to restricting user to access our cluster and should restricting images to deploy
+in our cluster. Also we need to always monitor our cluster health with grafana. We also need to 
+add some alert using grafana to prevent un usuaul use of our cluster.
