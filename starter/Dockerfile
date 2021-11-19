@@ -4,7 +4,7 @@
 FROM opensuse/leap:latest
 
 #define maintainer 
-LABEL maintainer="nick.reva@snap.com"
+LABEL maintainer="masud.cseian@gmail.com"
 
 #define version
 LABEL version="V1"

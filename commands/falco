@@ -1,0 +1,47 @@
+helm install --kubeconfig kube_config_cluster.yml falco falcosecurity/falco \
+  --set falco.grpc.enabled=true \
+  --set falco.grpcOutput.enabled=true \
+
+
+zypper install --oldpackage kernel-default-devel-5.3.18-59.19.1.x86_64
+
+helm install --kubeconfig kube_config_cluster.yml falco-exporter \
+ --set serviceMonitor.enabled=true \
+falcosecurity/falco-exporter
+
+kubectl --kubeconfig kube_config_cluster.yml get pods --namespace default -l "app.kubernetes.io/name=falco-exporter,app.kubernetes.io/instance=falco-exporter" -o jsonpath="{.items[0].metadata.name}"
+
+kubectl --kubeconfig kube_config_cluster.yml exec -it falco-4sfth /bin/bash
+
+logs
+
+kubectl --kubeconfig kube_config_cluster.yml logs -f falco-4sfth | grep adduser 
+
+kubectl --kubeconfig kube_config_cluster.yml logs -f falco-4sfth | grep /etc/shadow
+
+kubectl --kubeconfig kube_config_cluster.yml logs -f falco-4sfth | grep nc
+
+
+port forward
+
+kubectl --kubeconfig kube_config_cluster.yml --namespace default port-forward prometheus-prometheus-operator-163726-prometheus-0 9090
+
+kubectl --kubeconfig kube_config_cluster.yml port-forward --namespace default falco-exporter-bj48t 9376
+
+Service serviceMonitor
+
+touch falco_service_monitor.yaml
+
+prometheus-operator
+kubectl --kubeconfig kube_config_cluster.yml get prometheus
+
+kubectl --kubeconfig kube_config_cluster.yml edit prometheus prometheus-operator-163726-prometheus
+
+kubectl --kubeconfig kube_config_cluster.yml apply -f falco_service_monitor.yaml
+
+Grafana
+kubectl --kubeconfig kube_config_cluster.yml --namespace default port-forward prometheus-operator-1637263965-grafana-84677f6cf-hf8ld 3000
+
+Username: admin
+Password: prom-operator
+

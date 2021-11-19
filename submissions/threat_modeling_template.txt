@@ -1,0 +1,82 @@
+Docker Threat Modeling
+Given Docker's system components and the STRIDE framework, identify five potential threats that may arise.
+
+Five potential Docker threats:
+
+1. Spooling
+- An attacker my spoof the docker daemon or docker registry and introduct spoofed images and trick to using this image to the user.
+
+2. Tampering
+- Docker client and deomon configuration will be tempered by an attacker.
+
+3.Elevation of Privilege
+- If user name is not define in the Dockerfile and container runs as root, an attacker will access all other container on the same host, leading toisolation tempering
+
+4. Information Disclosure
+- The client may expose sensitive information such as secrets that are hardcoded in configuration files that could impact the security of the Dockerfile.
+Also the Docker host file system may be misconfigured, exposing sensitive information and leading to insecure defaults.
+
+5. Repudiation 
+- Malicious images may be committed without authorization by an attacker. This affects image security.
+
+
+
+Kubernetes Threat Modeling
+Given Kubernetes' system components and the STRIDE framework, identify five potential threats that may arise.
+
+Five potential Kubernetes threats:
+
+1. Spoofing 
+- The connection between the API server and kubelet can be spoofed. This can be mitigated by using kubelet uses strong encryption that does not have cryptographic flaws, strong TLS ciphers should be used.
+
+2. Tampering
+- The configuration of etcd may be tampered with by an attacker, modifying vital system-level configurations such as pod specs. This can be mitigated by restricting permissions on etcd files to 644 or more restrictive and that the pod spec file is set to root ownership.
+
+3. Elevation of Privilege 
+- Kubelet can be subject to an elevation of privilege. To ensure privileges cannot be escalated, make sure the authorization mode argument is not set to always allow.
+
+4. Information Disclosure
+- Sensitive information may be exposed via the etcd key-value store. This can be mitigated by encrypting etcd content at rest and using TLS to access etcd only from the kube-apiserver. All other traffic should be rejected.
+
+5. Repudiation
+- Unauthorized changes can be made to kubelet. To avoid this, kubelet authentication should be TLS and weak/ basic auth should not be allowed.
+
+
+Docker-bench Run Results and Analysis
+From the failed findings, select and document 3 findings from the Docker-bench results that you want to harden based on the 5 attack surface areas you identified in Step 1. At least 1 of the 3 hardened findings should be different from the ones mentioned in the exercise (i.e. 5.10, 5.14, and 5.22).
+
+I have chosen three findings to evaluate and remediate. Let's take a closer look at these three.
+
+1. [FAIL] 4.5 Ensure Content trust for Docker is Enabled (Scored)
+According to the CIS Docker Benchmark (provided courtesy of the Center for Internet Security)
+"Content trust provides the ability to use digital signatures for data sent to and received
+from remote Docker registries. These signatures allow client-side verification of the
+identity and the publisher of specific image tags and ensures the provenance of container
+images."
+
+Fixed: to fixed this we need to add 'export DOCKER_CONTENT_TRUST=1'
+
+
+2. [FAIL] 5.15 Ensure that the host's process namespace is not shared (Scored)
+According to the CIS Docker Benchmark (provided courtesy of the Center for Internet Security),
+"PID namespace provides separation between processes. It prevents system processes from
+being visible, and allows process ids to be reused including PID 1. If the host's PID
+namespace is shared with containers, it would basically allow these to see all of the
+processes on the host system. This reduces the benefit of process level isolation between
+the host and the containers. Under these circumstances a malicious user who has access to
+a container could get access to processes on the host itself, manipulate them, and even be
+able to kill them. This could allow for the host itself being shut down, which could be
+extremely serious, particularly in a multi-tenanted environment. You should not share the
+host's process namespace with the containers running on it."
+
+Fixed: to fixed this we need to add --pid flag to run docker like 'docker run --interactive --tty --pid=host durbin164/udacitysecurity:hardened-v1.0 /bin/bash'
+
+3. [FAIL] 5.4 Ensure that privileged containers are not used (Scored)
+According to the CIS Docker Benchmark (provided courtesy of the Center for Internet Security),
+"The --privileged flag provides all capabilities to the container to which it is applied, and
+also lifts all the limitations enforced by the device cgroup controller. As a consequence this
+the container has most of the rights of the underlying host. This flag only exists to allow for
+specific use cases (for example running Docker within Docker) and should not generally be
+used."
+
+Fixed: to fixed this we should not use ----privileged to run docker
